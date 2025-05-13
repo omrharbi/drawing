@@ -1,30 +1,27 @@
 use rand::Rng;
 use raster::{Color, Image};
-pub trait Displayable {
-    fn display() {}
-}
+
 #[derive(Debug)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
-}
-impl Point {
-    //    pub fn new(x: i32, y: i32) -> Self {
-    //         Point { x, y }
-    //     }
-    pub fn random(width: i32, hight: i32) -> Self {
-        Self { x: width, y: hight }
-    }
 }
 #[derive(Debug)]
 pub struct Line {
     pub start: Point,
     pub end: Point,
 }
+
+impl Point {
+    pub fn random(width: i32, hight: i32) -> Self {
+        let x1 = rand::rng().random_range(0..width);
+        let y1 = rand::rng().random_range(0..hight);
+
+        Self { x: x1, y: y1 }
+    }
+}
+
 impl Line {
-    // fn new(start: Point, end: Point) -> Self {
-    //     Line { start, end }
-    // }
     pub fn random(width: i32, hight: i32) -> Self {
         let x1 = rand::rng().random_range(0..width);
         let y1 = rand::rng().random_range(0..hight);
@@ -38,28 +35,46 @@ impl Line {
     }
 }
 
-// pub struct Triangle {
-//     pub start: Point,
-//     pub mid: Point,
-//     pub end: Point,
-// }
-
+pub trait Displayable {
+    fn display(&mut self, x: i32, y: i32, color: Color);
+}
 pub trait Drawable {
     fn draw(&mut self, image: &mut Image);
 }
 impl Drawable for Line {
     fn draw(&mut self, image: &mut Image) {
-        println!("{:?}", &self);
-        while self.start.x <= self.end.x {
-            let _ = image.set_pixel(self.start.x, self.end.y, Color::white());
-            self.start.x += 1;
+        let dx = self.end.x - self.start.x;
+        let dy = self.end.y - self.start.y;
+        let mut step = 0;
+
+        if dx.abs() > dy.abs() {
+            step = dx.abs();
+        } else {
+            step = dy.abs();
         }
+
+        let x_incr = dx / step;
+        let y_incr = dy / step;
+
+        let mut x = self.start.x;
+        let mut y = self.start.y;
+
+        // let color=Color::white();
+        for _ in 0..step {
+            // console.log(round(x) + " " + round(y));
+            Displayable::display(image, x as i32, y as i32, Color::white());
+            x += x_incr;
+            y += y_incr;
+        }
+            //  while self.start.x <= self.end.x {
+        //     self.start.x += 1;
+        // }
     }
 }
 
 impl Drawable for Point {
     fn draw(&mut self, image: &mut Image) {
-        let rands = rand::rng().random_range(1..=4);
-        let _ = image.set_pixel(0, 0, Color::rgba(255, 0, 0, 255));
+        let color = Color::green();
+        Displayable::display(image, self.x, self.y, color);
     }
 }
