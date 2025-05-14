@@ -61,7 +61,7 @@ impl Point {
     pub fn random(width: i32, hight: i32) -> Self {
         let x1 = rand::rng().random_range(0..width);
         let y1 = rand::rng().random_range(0..hight);
-        Self { x: x1, y: y1 }
+        Self::new(x1, y1)
     }
 }
 
@@ -235,7 +235,7 @@ fn zoome_point(image: &mut Image, x: i32, y: i32, color: Color, point: &str) {
         size = 3
     }
     let half = size / 2;
-    for dx in 0..size {
+     for dx in 0..size {
         for dy in 0..size {
             Displayable::display(image, x + (dx - half), y + (dy - half), color.clone());
         }
