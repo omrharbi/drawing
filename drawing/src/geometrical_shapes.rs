@@ -1,4 +1,3 @@
-mod geometrical_shapes {
     pub trait Drawable {
         fn draw(&self) {}
         fn color() {}
@@ -31,4 +30,3 @@ mod geometrical_shapes {
         pub mid: Point,
         pub end: Point,
     }
-}
