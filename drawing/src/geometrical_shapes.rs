@@ -122,6 +122,7 @@ impl Drawable for Circle {
                 &Point::new(x as i32, y as i32),
                 &Point::new(x1 as i32, y1 as i32),
                 color.clone(),
+                "notLine",
             );
         }
     }
@@ -129,56 +130,73 @@ impl Drawable for Circle {
 
 impl Drawable for Rectangle {
     fn draw(&mut self, image: &mut Image) {
-        Line {
-            start: Point::new(self.b.x, self.b.y),
-            end: Point::new(self.c.x, self.c.y),
-        }
-        .draw(image);
-        Line {
-            start: Point::new(self.c.x, self.c.y),
-            end: Point::new(self.a.x, self.a.y),
-        }
-        .draw(image);
-        Line {
-            start: Point::new(self.d.x, self.d.y),
-            end: Point::new(self.a.x, self.a.y),
-        }
-        .draw(image);
-        Line {
-            start: Point::new(self.b.x, self.b.y),
-            end: Point::new(self.d.x, self.d.y),
-        }
-        .draw(image);
+        let color = Self::color();
+        display_color(
+            image,
+            &Point::new(self.b.x, self.b.y),
+            &Point::new(self.c.x, self.c.y),
+            color.clone(),
+            "line",
+        );
+        display_color(
+            image,
+            &Point::new(self.c.x, self.c.y),
+            &Point::new(self.a.x, self.a.y),
+            color.clone(),
+            "line",
+        );
+        display_color(
+            image,
+            &Point::new(self.d.x, self.d.y),
+            &Point::new(self.a.x, self.a.y),
+            color.clone(),
+            "line",
+        );
+        display_color(
+            image,
+            &Point::new(self.b.x, self.b.y),
+            &Point::new(self.d.x, self.d.y),
+            color.clone(),
+            "line",
+        );
     }
 }
 
 impl Drawable for Triangle {
     fn draw(&mut self, image: &mut Image) {
-        Line {
-            start: Point::new(self.a.x, self.a.y),
-            end: Point::new(self.b.x, self.b.y),
-        }
-        .draw(image);
-        Line {
-            start: Point::new(self.b.x, self.b.y),
-            end: Point::new(self.c.x, self.c.y),
-        }
-        .draw(image);
-        Line {
-            start: Point::new(self.c.x, self.c.y),
-            end: Point::new(self.a.x, self.a.y),
-        }
-        .draw(image);
+           let color = Self::color();
+   
+         display_color(
+            image,
+             & Point::new(self.a.x, self.a.y),
+        &Point::new(self.b.x, self.b.y),
+            color.clone(),
+            "line",
+        );
+        display_color(
+            image,
+            & Point::new(self.b.x, self.b.y),
+        & Point::new(self.c.x, self.c.y),
+            color.clone(),
+            "line",
+        );
+        display_color(
+            image,
+        &Point::new(self.c.x, self.c.y),
+        & Point::new(self.a.x, self.a.y),
+            color.clone(),
+            "line",
+        );
     }
 }
 
 impl Drawable for Line {
     fn draw(&mut self, image: &mut Image) {
         let color = Self::color();
-        display_color(image, &self.start, &self.end, color.clone());
+        display_color(image, &self.start, &self.end, color.clone(), "line");
     }
 }
-fn display_color(image: &mut Image, start: &Point, end: &Point, color: Color) {
+fn display_color(image: &mut Image, start: &Point, end: &Point, color: Color, line: &str) {
     let dx = end.x - start.x;
     let dy = end.y - start.y;
     let step;
@@ -192,7 +210,12 @@ fn display_color(image: &mut Image, start: &Point, end: &Point, color: Color) {
     let mut x = start.x as f32;
     let mut y = start.y as f32;
     for _ in 0..step {
-        Displayable::display(image, x as i32, y as i32, color.clone());
+        if line == "line" {
+            zoome_point(image, x as i32, y as i32, color.clone(), "line");
+        } else {
+            Displayable::display(image, x as i32, y as i32, color.clone());
+        }
+
         x += x_incr;
         y += y_incr;
     }
@@ -200,6 +223,21 @@ fn display_color(image: &mut Image, start: &Point, end: &Point, color: Color) {
 impl Drawable for Point {
     fn draw(&mut self, image: &mut Image) {
         let color = Self::color();
-        Displayable::display(image, self.x, self.y, color.clone());
+        zoome_point(image, self.x, self.y, color.clone(), "point");
+    }
+}
+
+fn zoome_point(image: &mut Image, x: i32, y: i32, color: Color, point: &str) {
+    let size;
+    if point == "point" {
+        size = 12
+    } else {
+        size = 3
+    }
+    let half = size / 2;
+    for dx in 0..size {
+        for dy in 0..size {
+            Displayable::display(image, x + (dx - half), y + (dy - half), color.clone());
+        }
     }
 }
